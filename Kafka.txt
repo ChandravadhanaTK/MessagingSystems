@@ -1,0 +1,55 @@
+Start Zoo Keeper
+Start Kafka Server
+Create Topic
+list the topic 
+Send some messages
+Start the consumer
+
+export JAVA_HOME="C:/kafka_2.12-2.1.0/java/jdk1.8.0_102"
+cd /cygdrive/c/kafka_2.12-2.1.0/
+
+./bin/zookeeper-server-start.sh ./config/zookeeper.properties
+./bin/kafka-server-start.sh ./config/server.properties
+./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic demo
+./bin/kafka-topics.sh --list --zookeeper localhost:2181
+./bin/kafka-console-producer.sh --broker-list localhost:9092 --topic demo
+./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo --from-beginning
+
+
+Multiple Brokers
+~~~~~~~~~~~~~~~~~
+Setup a multi-broker cluster and start all of them
+create a new topic with a replication factor 
+describe topic - how can we know which broker is doing what
+publish few messages to new topic
+consume these messages from new topic
+
+cp config/server.properties config/server-1.properties
+cp config/server.properties config/server-2.properties
+
+config/server-1.properties:
+    broker.id=1
+    listeners=PLAINTEXT://:9093
+    log.dirs=/tmp/kafka-logs-1
+ 
+config/server-2.properties:
+    broker.id=2
+    listeners=PLAINTEXT://:9094
+    log.dirs=/tmp/kafka-logs-2
+	
+
+./bin/kafka-server-start.sh ./config/server.properties & 
+./bin/kafka-server-start.sh ./config/server-1.properties & 
+./bin/kafka-server-start.sh ./config/server-2.properties
+
+./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 3 --partitions 1 --topic my-replicated-topic
+./bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic my-replicated-topic
+./bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my-replicated-topic
+./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --topic my-replicated-topic
+
+What is the role of the Leader from the Consumer purpose?
+Consumer Group Live Demo
+Java Live Demo
+	Consumer
+	Consumer Group
+Docker Demo
